@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #ffffff;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border: 2px solid #87cefa;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4682b4;
+        }
+
+        .task-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .task-form input, .task-form button {
+            padding: 10px;
+            border: 2px solid #87cefa;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .task-form input {
+            flex: 1;
+        }
+
+        .task-form button {
+            background-color: #5f9ea0;
+            color: white;
+            cursor: pointer;
+        }
+
+        .task-form button:hover {
+            background-color: #4682b4;
+        }
+
+        .task-list {
+            margin-top: 20px;
+        }
+
+        .task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .task:hover {
+            background-color: #e6f7ff;
+        }
+
+        .task.completed {
+            background-color: #d3ffd3;
+        }
+
+        .task.completed .task-title {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+
+        .task-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .actions button {
+            margin-left: 5px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .actions button.complete {
+            background-color: #ffc107;
+            color: white;
+        }
+
+        .actions button.complete:hover {
+            background-color: #e0a800;
+        }
+
+        .actions button.edit {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .actions button.edit:hover {
+            background-color: #0056b3;
+        }
+
+        .actions button.delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .actions button.delete:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>To-Do App</h1>
+        <form class="task-form" id="taskForm">
+            <input type="text" id="taskInput" placeholder="Enter a task..." required>
+            <input type="datetime-local" id="taskDateTime" required>
+            <button type="submit">Add Task</button>
+        </form>
+        <div class="task-list" id="taskList"></div>
+    </div>
+
+    <script>
+        const taskForm = document.getElementById('taskForm');
+        const taskInput = document.getElementById('taskInput');
+        const taskDateTime = document.getElementById('taskDateTime');
+        const taskList = document.getElementById('taskList');
+
+        taskForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const taskTitle = taskInput.value;
+            const taskDate = taskDateTime.value;
+
+            if (taskTitle && taskDate) {
+                const task = {
+                    title: taskTitle,
+                    date: taskDate,
+                    completed: false,
+                };
+                addTaskToDOM(task);
+                taskInput.value = '';
+                taskDateTime.value = '';
+            }
+        });
+
+        function addTaskToDOM(task) {
+            const taskDiv = document.createElement('div');
+            taskDiv.classList.add('task');
+            if (task.completed) taskDiv.classList.add('completed');
+
+            const taskTitle = document.createElement('span');
+            taskTitle.classList.add('task-title');
+            taskTitle.textContent = `${task.title} (Due: ${new Date(task.date).toLocaleString()})`;
+
+            const actionsDiv = document.createElement('div');
+            actionsDiv.classList.add('actions');
+
+            const completeButton = document.createElement('button');
+            completeButton.classList.add('complete');
+            completeButton.textContent = 'Complete';
+            completeButton.onclick = () => {
+                task.completed = !task.completed;
+                taskDiv.classList.toggle('completed');
+            };
+
+            const editButton = document.createElement('button');
+            editButton.classList.add('edit');
+            editButton.textContent = 'Edit';
+            editButton.onclick = () => {
+                const newTitle = prompt('Edit task title:', task.title);
+                const newDate = prompt('Edit task date (YYYY-MM-DDTHH:mm):', task.date);
+                if (newTitle) task.title = newTitle;
+                if (newDate) task.date = newDate;
+                taskTitle.textContent = `${task.title} (Due: ${new Date(task.date).toLocaleString()})`;
+            };
+
+            const deleteButton = document.createElement('button');
+            deleteButton.classList.add('delete');
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = () => taskDiv.remove();
+
+            actionsDiv.appendChild(completeButton);
+            actionsDiv.appendChild(editButton);
+            actionsDiv.appendChild(deleteButton);
+
+            taskDiv.appendChild(taskTitle);
+            taskDiv.appendChild(actionsDiv);
+
+            taskList.appendChild(taskDiv);
+        }
+    </script>
+</body>
+</html>
